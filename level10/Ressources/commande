@@ -1,0 +1,45 @@
+Lorsque l'on se connecte au level10, 2 fichiers sont présents dans notre home :
+Un binaire et un fichier token.
+
+On ne peut pas lire le fichier token et si on lance le binaire on obtient ceci :
+
+level10@SnowCrash:~$ ./level10 
+./level10 file host
+        sends file to host if you have access to it
+
+On doit donc lui envoyer des arguments : un fichier ainsi que l'adresse ip d'un host.
+
+Si on essaie de lui passer token et localhost comme argument, il nous renvoie :
+You don't have access to token
+
+On doit donc trouver un moyen d'y avoir accès.
+
+Si on fait un tour sur gdb on remarque que un appel à access est fait vers le début probablement pour checker les droits du fichier à ouvrir puis un open plus loin.
+
+Un man access nous donne ces infos :
+
+Avertissement : Utiliser access() pour vérifier si un utilisateur a le droit, par exemple, d'ouvrir un fichier avant d'effectuer réellement l'ouverture avec open(2),risque de créer un trou de sécurité. En effet, l'utilisateur peut exploiter le petit intervalle de temps entre la vérification et l'accès pour modifier le fichier (via un lien symbolique en général). Pour cette raison, l'utilisation de cet appel système devrait être évitée.
+
+L'idée serait donc de créer un fichier dont on a les droits, que l'access soit fait sur ce fichier puis que l'open soit fait sur le fichier token qu'on mit dans ce laps de temps.
+
+Pour cela : 
+
+Touch /tmp/popo # On créer un fichier dont on a les droits
+
+On fait ensuite une loop dans laquelle on créer un lien symbolique de ce fichier se nommant toto dans tmp et juste après un autre lien symbolique mais cette fois de token en utilisant le même nom de fichier que le précédant pour que son contenu soit écrasé. Ainsi on pourra profiter de la faille d'access en changeant le contenu du fichier avant que le programme l'ouvre.
+
+while true; do ln -sf /tmp/popo /tmp/toto; ln -sf ~/token /tmp/toto; done 
+
+Sur un autre shell on lance un nc pour lire sur le socket : 
+
+nc -lk 6969
+
+Et sur encore un autre shell on lance le binaire en boucle en utilisant le lien symbolique car il ne fonctionnera pas à tout les coups :
+
+while true ;  do ./level10 /tmp/toto 127.0.0.1; done
+
+Ainsi dans la fenêtre du nc on verra le token apparaitre toutes les fois où notre script profitera de la faille d'access.
+
+Ce token nous permet donc de nous connecter à flag10 et de lancer getflag.
+
+Token : feulo4b72j7edeahuete3no7c

@@ -1,0 +1,28 @@
+Lorsqu'on arrive au level05, on voit qu'il n'y a rien dans le home.
+Un classique, on lance donc la commande suivante :
+
+find / -user flag05 2>/dev/null
+
+Cela nous montre 2 fichiers :
+
+/usr/sbin/openarenaserver
+/rofs/usr/sbin/openarenaserver
+
+
+On peut lire le premier mais pas le second
+
+C'est un petit script en shell qui parcoure tout les fichier de /opt/openarenaserver/
+en essayant de les executer puis les supprime.
+
+Apres quelques tests on ce rend vite compte que le script est exécuté automatiquement (la disparition du script que l'on créer après un certain temps nous l'indique)
+On soupçonne donc un cron.
+
+On récupère le meme script que pour le level03 pour le placer dans le dossier cible :
+
+#!/bin/bash
+
+getflag > /tmp/tokenhere
+
+Apres quelques secondes/minutes on peut retrouver notre token dans le fichier /tmp/tokenhere
+
+Token: viuaaale9huek52boumoomioc

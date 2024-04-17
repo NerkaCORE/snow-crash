@@ -1,0 +1,19 @@
+Un binaire est présent dans le home avec les droits flag07.
+
+Il affiche 'Level07' lorsqu'on l'execute.
+
+Un 'strings' nous montre l'utilisation de:
+getenv
+LOGNAME
+asprintf
+/bin/echo $s
+
+On peux donc essayer de modifier la variable d'environnement LOGNAME et voir que cela modifie bien l'output du binaire
+
+en modifiant cette variable on peut lui faire exécuter getflag à la place comme ceci :
+
+export LOGNAME='$(getflag)'
+
+On obtient ainsi le token :
+
+fiumuikeil55xe9cu4dood66h

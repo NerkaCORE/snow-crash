@@ -1,0 +1,69 @@
+Une fois connecté en tant que level06, on remarque 2 fichiers dans notre home : un binaire et un script PHP.
+
+Si on lance le binaire, on reçoit juste un warning php nous disant que le nom du fichier ne peut pas être vide, on se doute donc que le binaire se lance bien mais qu'il faut lui passer quelque chose en argument.
+
+Voici le code du fichier PHP une fois passé au beautifier :
+
+<?php
+function y($m)
+{
+    $m = preg_replace("/\./", " x ", $m);
+    $m = preg_replace("/@/", " y", $m);
+    return $m;
+}
+function x($y, $z)
+{
+    $a = file_get_contents($y);
+    $a = preg_replace("/(\[x (.*)\])/e", "y(\"\\2\")", $a);
+    $a = preg_replace("/\[/", "(", $a);
+    $a = preg_replace("/\]/", ")", $a);
+    return $a;
+}
+$r = x($argv[1], $argv[2]);
+print $r;
+?>
+
+Ce code contient 2 fonctions et nous affiche le résultat de la fonction x :
+
+La première à être appelé est la fonction x, celle-ci prend 2 paramètres dont le nom du fichier qu'on lui passe en argument comme 1er paramètre.
+
+Cette fonction appelle file_get_contents qui renvoie le contenu du fichier sous forme de chaine de caractères. Elle appelle ensuite preg_replace qui utilise les regex pour chercher et modifier des portions de chaine de caractères spécifiques.
+
+Dans ce cas : 
+
+Il cherche le pattern ([x ...])
+Il cherche le caractère [ et le remplace par (
+Il cherche le caractère ] et le remplace par )
+
+Une fois que les remplacements ont été fait, la fonction renvoie le résultat et l'affiche sur la sortie standard.
+
+La fonction y quant à elle n'effectue que de simple remplacement regex.
+
+Pour trouver une faille on peut prendre en compte 2 choses : 
+
+La version de php utilisée dans la VM est la 5.3.10
+
+Lorsqu'on copie ce code et qu'on le lance sur une machine ayant une version mis à jour de php, cela nous affiche le warning suivant :
+
+PHP Warning:  preg_replace(): The /e modifier is no longer supported, use preg_replace_callback instead in /home/nerka/Desktop/SnowCrash/php_test.php on line 11
+
+Cela nous dit que le modifier /e n'est plus pris en charge.
+
+Ce modifier utilise la fonction eval() qui execute une chaine comme un script php, ce qui en fait une faille.
+
+On comprend donc que tous ce qui est envoyé est transformé en code PHP.
+
+Pour tirer profit de cette faille on doit donc faire une chaine de caractère compatible avec tout les regex pour qu'il l'exécute. 
+
+D'après la doc PHP suivante : 
+https://www.php.net/manual/fr/language.types.string.php#language.types.string.parsing.complex
+
+On peut utiliser la syntax complexe afin de pouvoir récupérer le résultat de la fonction que l'on passe comme ceci :
+
+{${function()}} 
+
+On essaie donc d'exécuter getflag avec cette syntax via un fichier dans /tmp et on obtient ainsi le flag du niveau suivant.
+
+echo '[x {${exec(getflag)}}]' > /tmp/flag
+
+Token : wiok45aaoguiboiki2tuin6ub

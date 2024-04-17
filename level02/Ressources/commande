@@ -1,0 +1,13 @@
+On trouve un fichier level02.pcap qui est une capture de packet
+
+Le lire avec Wireshark permet de l'analyser et de comprendre qu'il s'agit d'une demande d'authentification.
+
+Le mot de passe ce lit avec un character par packet, on peut récupérer ft_wandr7f7f7fNDRel7fL0L
+
+7f est la valeur hexa dans la table ascii pour 'back space' autrement dit, il supprime le dernier input.
+
+en clair le mot de passe de flag02 est : ft_waNDReL0L
+
+On lance getflag est on obtient le token suivant :
+
+kooda2puivaav1idi4f57q8iq

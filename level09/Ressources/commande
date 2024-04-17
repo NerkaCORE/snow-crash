@@ -1,0 +1,62 @@
+Lorsqu'on se connecte au level09, on a encore une fois 2 fichiers : 
+
+Un binaire 'level08' et un fichier 'token'.
+
+Si on lit le fichier token on obtient :
+
+f4kmm6p|=�p�n��DB�Du{��
+
+Si on exécute le binaire on obtient : 
+
+You need to provied only one arg.
+
+On essaie donc de lui envoyer un argument comme demandé :
+
+./level09 token
+tpmhr3
+
+Si on essaie autre chose comme :
+
+./level09 123456789
+13579;=?A
+
+Ou encore :
+
+./level09 abcdefg
+acegikm
+
+On remarque donc que chaque caractère est le résultat d'un décalage de position dans la table ascii.
+
+Pour abcdefg :
+
+( 97) a + 0 : a ( 97)
+( 98) b + 1 : c ( 99)
+( 99) c + 2 : e (101)
+(100) d + 3 : g (103)
+(101) e + 4 : i (105)
+(102) f + 5 : k (107)
+(103) g + 6 : m (109)
+
+On se doute donc que le token a été crypté en utilisant cette technique du coup pour décoder le token, il suffit de soustraire la valeur de position de la valeur rajoutée et pour cela on fait un petit script en c que l'on met dans /tmp :
+
+#include <unistd.h>
+
+int main (int argc, char **argv)
+{
+    int i = 0;
+
+    while (argv[1][i])
+    {
+        int c = argv[1][i] - i;
+        write(1, &c, 1);
+        i++;
+    }
+    return 1;
+}
+
+
+On l'exécute ainsi : ./a.out $(cat ~/token) ce qui nous donne le token de flag09 :
+
+f3iji1ju5yuevaus41q1afiuq, on se connecte, on lance getflag et hop on obtient le token du level10 :
+
+s5cAJpM8ev6XHw998pRWG728z

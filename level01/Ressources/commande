@@ -1,0 +1,13 @@
+En cherchant un flag crypté parmi les fichiers, on trouve le fichier /etc/passwd .
+
+Celui ci contient une ligne différente par rapport aux autres lignes:
+
+flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash
+
+On s'intéresse plus particulièrement à la chaine crypté '42hDRfypTqqnw', si l'on utilise John The Ripper, cela nous dis que c'est un cryptage DES.
+
+On utilise donc john pour le décoder et cela nous donne le token de flag01: abcdefg
+
+On se connecte à l'utilisateur et on utilise getflag pour obtenir le token suivant :
+
+f2av5il02puano7naaf6adaaf

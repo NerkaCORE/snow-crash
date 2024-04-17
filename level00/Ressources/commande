@@ -1,0 +1,20 @@
+Comme recommandé dans la video du projet, il faut chercher s'il y a un fichier qui a les droits de l'utilisateur 'flag00'.
+
+Pour cela on utilise la commande suivante :
+
+find / -user flag00 2>/dev/null
+
+Ce qui nous affiche :
+
+./usr/sbin/john
+./rofs/usr/sbin/john
+
+À l'intérieur de ces fichiers on trouve le code suivant : cdiiddwpgswtgt
+
+En utilisant le site dcode.fr, on découvre que c'est un simple ROT15 et que en décrypté cela donne :
+
+nottoohardhere
+
+On peut donc maintenant se connecter à flag00 avec ce mot de passe, ceci étant fait on nous dit de lancer la commande getflag afin d'obtenir le mot de passe de l'utilisateur level01 : 
+
+x24ti5gi3x0ol2eh4esiuxias

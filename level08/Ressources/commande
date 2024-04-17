@@ -1,0 +1,40 @@
+Un binaire et un fichier token sont présents dans le home.
+Le binaire a les droits d'exécution de flag08.
+Le fichier n'est utilisable que par flag08.
+
+Si on exécute le binaire il demande un fichier a lire.
+
+Si on execute le binaire avec le token en argument on a pas les droits :
+
+ You may not access 'token'
+
+le binaire nous refuse donc l'accès au fichier
+
+Analyse avec gdb:
+
+(gdb) disas main
+...
+   0x080485af <+91>:    movl   $0x8048793,0x4(%esp)
+   0x080485b7 <+99>:    mov    %eax,(%esp)
+   0x080485ba <+102>:    call   0x8048400 <strstr@plt>
+...
+   0x080485fd <+169>:    call   0x8048470 <open@plt>
+
+
+Le binaire fait un strstr avant d'ouvrir le fichier, si on regarde ce qu'il compare:
+
+(gdb) x/s 0x8048793
+0x8048793:     "token"
+
+
+On remarque qu'il vérifie si le fichier est nommer 'token'
+si c'est le cas il va quitter, sinon il ouvrira le fichier et lira le contenu
+
+Comme le fichier ne nous appartient pas, la seul solution est de faire un lien symbolique.
+
+ln -s /home/user/level08/token /tmp/gimmekey
+
+Puis on execute le binaire avec le lien symbolique en argument ce qui nous donne le token :
+quif5eloekouj29ke0vouxean qui nous permet de nous connecter à flag08 puis avec getflag on obtient le token du niveau suivant :
+
+25749xKZ8L7DkSCwJkT9dyv6f

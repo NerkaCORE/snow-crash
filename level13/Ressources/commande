@@ -1,0 +1,35 @@
+Un binaire est present dans le home
+
+Le lancer nous donne un message: UID 2013 started us but we we expect 4242
+
+Un strings met en évidence plusieurs choses:
+
+Un Hash du token est present, le binaire nous l'affichera si on a le bon UID
+
+On lance donc GDB:
+
+0x08048595 <+9>:    call   0x8048380 <getuid@plt>
+0x0804859a <+14>:    cmp    $0x1092,%eax
+
+
+Getuid est appelé, puis un cmp entre L'uid et 4242 est effectue
+
+Il faut donc modifier le registre contenant le retour de getuid pour le remplacer par 4242
+
+(gdb) b getuid #creation d'un breakpoint sur l'appelle de la fonction getuid
+Breakpoint 1 at 0x8048380
+(gdb) run #on lance le programme qui ce stoppera au breakpoint
+...
+(gdb) step #on le fait avancer d'un step pour arriver après l'exécution de la fonction getuid
+...
+(gdb) i r eax # on affiche le retour de getuid, il s'agit bien de notre uid
+eax            0x7dd    2013
+(gdb) set $eax=4242 # on modifie le registre pour remplacer notre uid par celui qui nous intéresse
+(gdb) step
+Single stepping until exit from function main,
+which has no line number information.
+your token is 2A31L79asukciNyi8uppkEuSx
+0xb7e454d3 in __libc_start_main () from /lib/i386-linux-gnu/libc.so.6
+
+
+Token: 2A31L79asukciNyi8uppkEuSx 
